@@ -1,0 +1,25 @@
+# Environment files
+.env
+.env.*
+
+# Node.js
+node_modules/
+
+# Flutter
+.dart_tool/
+.flutter-plugins
+.flutter-plugins-dependencies
+.packages
+build/
+
+# IDE
+.vscode/
+.idea/
+
+# Android
+android/.gradle/
+android/local.properties
+
+# OS
+.DS_Store
+Thumbs.db

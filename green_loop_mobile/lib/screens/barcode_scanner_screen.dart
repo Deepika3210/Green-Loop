@@ -1,10 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
 
+import '../main.dart';
 import '../services/api_service.dart';
 
 class BarcodeScannerScreen extends StatefulWidget {
-  const BarcodeScannerScreen({super.key});
+  final VoidCallback? onSubmitted;
+
+  const BarcodeScannerScreen({
+    super.key,
+    this.onSubmitted,
+  });
 
   @override
   State<BarcodeScannerScreen> createState() =>
@@ -13,135 +19,97 @@ class BarcodeScannerScreen extends StatefulWidget {
 
 class _BarcodeScannerScreenState
     extends State<BarcodeScannerScreen> {
+  bool processing = false;
 
-  bool isProcessing = false;
+  Future<void> _handleBarcode(String barcode) async {
+    if (processing || barcode.trim().isEmpty) return;
 
-  Future<void> handleBarcode(String barcode) async {
-
-    if (isProcessing) return;
-
-    if (barcode.isEmpty) return;
-
-    setState(() {
-      isProcessing = true;
-    });
+    setState(() => processing = true);
 
     try {
-
-      final result =
-          await ApiService.scanProduct(barcode);
+      final product = await ApiService.scanProduct(barcode.trim());
 
       if (!mounted) return;
 
-      setState(() {
-        isProcessing = false;
-      });
-
-      Navigator.push(
+      await Navigator.push(
         context,
         MaterialPageRoute(
           builder: (_) => ProductResultScreen(
-            barcode: barcode,
-            result: result,
+            barcode: barcode.trim(),
+            product: product,
+            onSubmitted: widget.onSubmitted,
           ),
         ),
       );
-
-    } catch (error) {
-
+    } catch (e) {
       if (!mounted) return;
-
-      setState(() {
-        isProcessing = false;
-      });
 
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(
-            'Could not connect to Green Loop server',
+            e.toString().replaceFirst('Exception: ', ''),
           ),
         ),
       );
+    } finally {
+      if (mounted) setState(() => processing = false);
     }
   }
 
   @override
   Widget build(BuildContext context) {
-
     return Scaffold(
-
-      backgroundColor: const Color(0xFFF7FAF8),
-
+      backgroundColor: Colors.black,
       appBar: AppBar(
-        title: const Text(
-          'Barcode Scanner',
-          style: TextStyle(
-            fontWeight: FontWeight.bold,
-          ),
-        ),
+        title: const Text('Scan Product'),
+        backgroundColor: Colors.black,
+        foregroundColor: Colors.white,
       ),
-
       body: Stack(
-
         children: [
-
           MobileScanner(
-
             onDetect: (capture) {
+              if (capture.barcodes.isEmpty) return;
 
-              final List<Barcode> barcodes =
-                  capture.barcodes;
+              final value = capture.barcodes.first.rawValue;
+              if (value == null) return;
 
-              if (barcodes.isEmpty) return;
-
-              final String? value =
-                  barcodes.first.rawValue;
-
-              if (value != null) {
-                handleBarcode(value);
-              }
+              _handleBarcode(value);
             },
           ),
-
-          // Scanner overlay
           Center(
             child: Container(
-              width: 280,
-              height: 160,
+              width: 285,
+              height: 170,
               decoration: BoxDecoration(
                 border: Border.all(
                   color: Colors.white,
                   width: 3,
                 ),
-                borderRadius:
-                    BorderRadius.circular(16),
+                borderRadius: BorderRadius.circular(18),
               ),
             ),
           ),
-
           Positioned(
-            bottom: 70,
             left: 0,
             right: 0,
+            bottom: 60,
             child: Column(
               children: [
-
                 const Text(
-                  'Position the barcode inside the frame',
-                  textAlign: TextAlign.center,
+                  'Place the barcode inside the frame',
                   style: TextStyle(
                     color: Colors.white,
                     fontSize: 16,
                     fontWeight: FontWeight.w600,
                   ),
                 ),
-
-                const SizedBox(height: 12),
-
-                if (isProcessing)
+                if (processing) ...[
+                  const SizedBox(height: 15),
                   const CircularProgressIndicator(
                     color: Colors.white,
                   ),
+                ],
               ],
             ),
           ),
@@ -151,19 +119,16 @@ class _BarcodeScannerScreenState
   }
 }
 
-// ======================================================
-// PRODUCT RESULT
-// ======================================================
-
 class ProductResultScreen extends StatefulWidget {
-
   final String barcode;
-  final Map<String, dynamic> result;
+  final Map<String, dynamic> product;
+  final VoidCallback? onSubmitted;
 
   const ProductResultScreen({
     super.key,
     required this.barcode,
-    required this.result,
+    required this.product,
+    this.onSubmitted,
   });
 
   @override
@@ -173,262 +138,228 @@ class ProductResultScreen extends StatefulWidget {
 
 class _ProductResultScreenState
     extends State<ProductResultScreen> {
-
   int quantity = 1;
+  bool submitting = false;
+
+  double get unitWeight {
+    return double.tryParse(
+          widget.product['weight']?.toString() ?? '0',
+        ) ??
+        0;
+  }
+
+  int get pointsPerItem {
+    return int.tryParse(
+          widget.product['points']?.toString() ?? '0',
+        ) ??
+        0;
+  }
+
+  double get totalWeight => unitWeight * quantity;
+
+  Future<void> _submit() async {
+    final userId = UserSession.id;
+    if (userId == null) {
+      _message('Please log in again.');
+      return;
+    }
+
+    final productId = widget.product['_id']?.toString() ??
+        widget.product['id']?.toString();
+
+    if (productId == null || productId.isEmpty) {
+      _message('Product ID is missing.');
+      return;
+    }
+
+    setState(() => submitting = true);
+
+    try {
+      final result = await ApiService.submitWaste(
+        userId: userId,
+        productId: productId,
+        quantity: quantity,
+        totalWeight: totalWeight,
+      );
+
+      if (!mounted) return;
+
+      _message(
+        result['message']?.toString() ??
+            'Recycling submitted successfully.',
+      );
+
+      widget.onSubmitted?.call();
+
+      await Future<void>.delayed(
+        const Duration(milliseconds: 500),
+      );
+
+      if (mounted) Navigator.pop(context);
+    } catch (e) {
+      if (!mounted) return;
+
+      _message(
+        e.toString().replaceFirst('Exception: ', ''),
+      );
+    } finally {
+      if (mounted) setState(() => submitting = false);
+    }
+  }
+
+  void _message(String text) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(text),
+        behavior: SnackBarBehavior.floating,
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
-
-    final product = widget.result;
-    if (product == null) {
-
-      return Scaffold(
-
-        appBar: AppBar(
-          title: const Text('Product'),
-        ),
-
-        body: const Center(
-          child: Text(
-            'Product Not Found',
-            style: TextStyle(
-              fontSize: 20,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-        ),
-      );
-    }
-
-    final String name =
-        product['name']?.toString() ??
-        'Unknown Product';
-
-    final String brand =
-        product['brand']?.toString() ??
-        '';
-
-    final num weight =
-        product['weight'] ?? 0;
-
-    final num points =
-        product['points'] ?? 0;
+    final brand =
+        widget.product['brand']?.toString() ?? 'Unknown Product';
 
     return Scaffold(
-
-      backgroundColor:
-          const Color(0xFFF7FAF8),
-
+      backgroundColor: const Color(0xFFF7FAF8),
       appBar: AppBar(
-        title: const Text(
-          'Product Details',
-        ),
+        title: const Text('Product Details'),
       ),
-
-      body: SingleChildScrollView(
-
+      body: ListView(
         padding: const EdgeInsets.all(20),
-
-        child: Column(
-
-          crossAxisAlignment:
-              CrossAxisAlignment.start,
-
-          children: [
-
-            Container(
-              width: double.infinity,
-              padding: const EdgeInsets.all(22),
-
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius:
-                    BorderRadius.circular(20),
-                boxShadow: [
-                  BoxShadow(
-                    color:
-                        Colors.black.withOpacity(0.06),
-                    blurRadius: 12,
-                  ),
-                ],
-              ),
-
-              child: Column(
-
-                crossAxisAlignment:
-                    CrossAxisAlignment.start,
-
-                children: [
-
-                  const Icon(
-                    Icons.recycling,
-                    size: 55,
-                    color: Colors.green,
-                  ),
-
-                  const SizedBox(height: 15),
-
-                  Text(
-                    name,
-                    style: const TextStyle(
-                      fontSize: 25,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-
-                  if (brand.isNotEmpty)
-                    Text(
-                      brand,
-                      style: TextStyle(
-                        color: Colors.grey[600],
-                        fontSize: 16,
-                      ),
-                    ),
-
-                  const Divider(height: 30),
-
-                  _infoRow(
-                    'Barcode',
-                    widget.barcode,
-                  ),
-
-                  _infoRow(
-                    'Weight',
-                    '$weight g',
-                  ),
-
-                  _infoRow(
-                    'Points',
-                    '$points points',
-                  ),
-                ],
-              ),
+        children: [
+          Container(
+            padding: const EdgeInsets.all(22),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(20),
             ),
-
-            const SizedBox(height: 25),
-
-            const Text(
-              'Quantity',
-              style: TextStyle(
-                fontSize: 19,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-
-            const SizedBox(height: 12),
-
-            Row(
-
-              mainAxisAlignment:
-                  MainAxisAlignment.center,
-
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-
-                IconButton(
-                  onPressed: () {
-
-                    if (quantity > 1) {
-                      setState(() {
-                        quantity--;
-                      });
-                    }
-                  },
-
-                  icon: const Icon(
-                    Icons.remove_circle_outline,
-                    size: 35,
-                  ),
+                const Icon(
+                  Icons.recycling,
+                  color: Colors.green,
+                  size: 58,
                 ),
-
-                const SizedBox(width: 20),
-
+                const SizedBox(height: 15),
                 Text(
-                  '$quantity',
+                  brand,
                   style: const TextStyle(
                     fontSize: 25,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
-
-                const SizedBox(width: 20),
-
-                IconButton(
-                  onPressed: () {
-
-                    setState(() {
-                      quantity++;
-                    });
-
-                  },
-
-                  icon: const Icon(
-                    Icons.add_circle_outline,
-                    size: 35,
+                const SizedBox(height: 5),
+                Text(
+                  'Registered Green Loop product',
+                  style: TextStyle(
+                    color: Colors.grey.shade600,
                   ),
+                ),
+                const Divider(height: 30),
+                _row('Barcode', widget.barcode),
+                _row('Unit weight', '$unitWeight g'),
+                _row('Points / item', '$pointsPerItem'),
+              ],
+            ),
+          ),
+          const SizedBox(height: 22),
+          const Text(
+            'Quantity',
+            style: TextStyle(
+              fontSize: 19,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          const SizedBox(height: 10),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              IconButton(
+                onPressed: quantity > 1 && !submitting
+                    ? () => setState(() => quantity--)
+                    : null,
+                icon: const Icon(
+                  Icons.remove_circle_outline,
+                  size: 36,
+                ),
+              ),
+              const SizedBox(width: 20),
+              Text(
+                '$quantity',
+                style: const TextStyle(
+                  fontSize: 27,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              const SizedBox(width: 20),
+              IconButton(
+                onPressed: !submitting
+                    ? () => setState(() => quantity++)
+                    : null,
+                icon: const Icon(
+                  Icons.add_circle_outline,
+                  size: 36,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 12),
+          Container(
+            padding: const EdgeInsets.all(18),
+            decoration: BoxDecoration(
+              color: const Color(0xFFE1F2E7),
+              borderRadius: BorderRadius.circular(16),
+            ),
+            child: Column(
+              children: [
+                _row('Total weight', '$totalWeight g'),
+                _row(
+                  'Points earned',
+                  '${pointsPerItem * quantity}',
                 ),
               ],
             ),
-
-            const SizedBox(height: 20),
-
-            SizedBox(
-              width: double.infinity,
-              height: 55,
-
-              child: ElevatedButton(
-
-                onPressed: () {
-
-                  ScaffoldMessenger.of(context)
-                      .showSnackBar(
-                    const SnackBar(
-                      content: Text(
-                        'Product selected. Recycling submission will be connected next.',
+          ),
+          const SizedBox(height: 25),
+          SizedBox(
+            height: 55,
+            child: ElevatedButton.icon(
+              onPressed: submitting ? null : _submit,
+              icon: submitting
+                  ? const SizedBox(
+                      width: 20,
+                      height: 20,
+                      child: CircularProgressIndicator(
+                        strokeWidth: 2,
                       ),
-                    ),
-                  );
-
-                },
-
-                child: const Text(
-                  'CONTINUE',
-                  style: TextStyle(
-                    fontSize: 17,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
+                    )
+                  : const Icon(Icons.check_circle_outline),
+              label: Text(
+                submitting
+                    ? 'Saving...'
+                    : 'CONFIRM RECYCLING',
               ),
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
 
-  Widget _infoRow(
-    String title,
-    String value,
-  ) {
-
+  Widget _row(String title, String value) {
     return Padding(
-
-      padding:
-          const EdgeInsets.only(bottom: 14),
-
+      padding: const EdgeInsets.only(bottom: 11),
       child: Row(
-
-        mainAxisAlignment:
-            MainAxisAlignment.spaceBetween,
-
         children: [
-
-          Text(
-            title,
-            style: TextStyle(
-              color: Colors.grey[600],
+          Expanded(
+            child: Text(
+              title,
+              style: TextStyle(color: Colors.grey.shade700),
             ),
           ),
-
           Flexible(
             child: Text(
               value,

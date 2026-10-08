@@ -1,34 +1,42 @@
 const mongoose = require('mongoose');
 
-const productSchema = new mongoose.Schema({
+/* =========================================================
+   PRODUCT SCHEMA
+========================================================= */
 
-    name: {
-        type: String,
-        required: true
-    },
-
+const productSchema = new mongoose.Schema(
+  {
     brand: {
-        type: String,
-        required: true
+      type: String,
+      required: true,
+      trim: true,
     },
 
     barcode: {
-        type: String,
-        required: true,
-        unique: true
+      type: String,
+      required: true,
+      unique: true,
+      trim: true,
     },
 
     points: {
-        type: Number,
-        default: 0
+      type: Number,
+      required: true,
+      default: 0,
+      min: 0,
     },
 
     weight: {
-        type: Number,
-        default: 0
-    }
+      type: Number,
+      required: true,
+      default: 0,
+      min: 0,
+    },
+  },
 
-});
+  {
+    timestamps: true,
+  }
+);
 
-module.exports =
-    mongoose.model('Product', productSchema);
+module.exports = mongoose.model('Product', productSchema);

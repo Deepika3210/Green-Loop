@@ -1,0 +1,591 @@
+/* =========================================
+   GLOBAL AUTHENTICATION LAYOUT
+========================================= */
+
+.auth-page {
+  min-height: 100vh;
+  display: grid;
+  grid-template-columns: 0.9fr 1.1fr;
+  background: #ffffff;
+  color: #193329;
+  font-family: "Inter", Arial, sans-serif;
+}
+
+/* =========================================
+   LEFT BRAND PANEL
+========================================= */
+
+.auth-brand-panel {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  min-height: 100vh;
+  padding: 42px 8%;
+  overflow: hidden;
+  color: #ffffff;
+  background:
+    radial-gradient(
+      circle at 85% 15%,
+      rgba(158, 220, 130, 0.24),
+      transparent 35%
+    ),
+    linear-gradient(145deg, #123c2c, #176444 58%, #248b55);
+}
+
+.brand-logo,
+.mobile-brand-logo {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 27px;
+  font-weight: 800;
+  letter-spacing: -1px;
+}
+
+.brand-icon {
+  display: grid;
+  place-items: center;
+  width: 46px;
+  height: 46px;
+  color: #174c32;
+  background: #d6f4b5;
+  border-radius: 14px;
+}
+
+.brand-highlight {
+  color: #75c95c;
+}
+
+.brand-content {
+  width: 100%;
+  max-width: 510px;
+  margin: 55px auto;
+}
+
+.brand-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  padding: 11px 15px;
+  color: #e0f8d5;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.17);
+  border-radius: 30px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 1px;
+}
+
+.brand-content h1 {
+  margin: 30px 0 20px;
+  font-size: clamp(40px, 4vw, 62px);
+  line-height: 1.13;
+  letter-spacing: -2px;
+}
+
+.brand-content h1 span {
+  color: #a8e88b;
+}
+
+.brand-content > p {
+  max-width: 440px;
+  color: #d4e9dc;
+  font-size: 15px;
+  line-height: 1.9;
+}
+
+.impact-card {
+  display: flex;
+  align-items: flex-start;
+  gap: 17px;
+  margin-top: 38px;
+  padding: 22px;
+  background: rgba(255, 255, 255, 0.09);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 18px;
+}
+
+.impact-icon {
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  width: 48px;
+  height: 48px;
+  color: #164c30;
+  background: #b8ee9e;
+  border-radius: 13px;
+}
+
+.impact-card h3 {
+  margin: 2px 0 8px;
+  font-size: 16px;
+}
+
+.impact-card p {
+  margin: 0;
+  color: #d5e9dc;
+  font-size: 13px;
+  line-height: 1.7;
+}
+
+.brand-footer {
+  margin: 0;
+  color: #c9e4d3;
+  font-size: 12px;
+}
+
+/* =========================================
+   RIGHT FORM PANEL
+========================================= */
+
+.auth-form-panel {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 0;
+  padding: 48px 7%;
+}
+
+.auth-form-container {
+  width: 100%;
+  max-width: 460px;
+}
+
+.signup-container {
+  max-width: 560px;
+}
+
+.mobile-brand-logo {
+  display: none;
+  color: #164c30;
+}
+
+.auth-heading {
+  margin-bottom: 30px;
+}
+
+.welcome-label {
+  color: #24844e;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 1.7px;
+}
+
+.auth-heading h2 {
+  margin: 13px 0 10px;
+  color: #172c21;
+  font-size: clamp(27px, 3vw, 35px);
+  line-height: 1.25;
+  letter-spacing: -1px;
+}
+
+.auth-heading p {
+  margin: 0;
+  color: #78847c;
+  font-size: 14px;
+  line-height: 1.7;
+}
+
+/* =========================================
+   FORM FIELDS
+========================================= */
+
+.form-field {
+  margin-bottom: 21px;
+}
+
+.form-field > label {
+  display: block;
+  margin-bottom: 9px;
+  color: #263a2e;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.form-field input {
+  width: 100%;
+  min-height: 49px;
+  padding: 13px 15px;
+  color: #263a2e;
+  background: #ffffff;
+  border: 1px solid #dce5dd;
+  border-radius: 10px;
+  outline: none;
+  font: inherit;
+  font-size: 14px;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.form-field input::placeholder {
+  color: #a3ada5;
+}
+
+.form-field input:focus {
+  border-color: #32955b;
+  box-shadow: 0 0 0 3px rgba(50, 149, 91, 0.1);
+}
+
+.password-wrapper {
+  position: relative;
+}
+
+.password-wrapper input {
+  padding-right: 50px;
+}
+
+.password-toggle {
+  position: absolute;
+  top: 50%;
+  right: 12px;
+  display: grid;
+  place-items: center;
+  padding: 6px;
+  color: #77847a;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  transform: translateY(-50%);
+}
+
+/* =========================================
+   ROLE SELECTION CARDS
+========================================= */
+
+.role-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 13px;
+  width: 100%;
+}
+
+.role-option {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 10px;
+
+  width: 100%;
+  min-width: 0;
+  min-height: 142px;
+  padding: 17px;
+
+  color: #526258;
+  text-align: left;
+  white-space: normal;
+
+  background: #ffffff;
+  border: 1.5px solid #e0e8e1;
+  border-radius: 15px;
+
+  cursor: pointer;
+  font-family: inherit;
+
+  transition:
+    border-color 0.2s ease,
+    background 0.2s ease,
+    box-shadow 0.2s ease,
+    transform 0.2s ease;
+}
+
+.role-option:hover {
+  border-color: #78b88b;
+  background: #fbfefb;
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(32, 120, 74, 0.07);
+}
+
+.role-option.selected {
+  padding: 16px;
+  background: #f0faf2;
+  border: 2px solid #27834e;
+  box-shadow: 0 0 0 3px rgba(39, 131, 78, 0.07);
+}
+
+.role-option:focus-visible {
+  outline: 3px solid rgba(39, 131, 78, 0.25);
+  outline-offset: 3px;
+}
+
+.role-icon {
+  display: grid;
+  place-items: center;
+  width: 42px;
+  height: 42px;
+  flex-shrink: 0;
+  color: #27834e;
+  background: #edf7ee;
+  border-radius: 12px;
+}
+
+.role-option.selected .role-icon {
+  color: #ffffff;
+  background: #27834e;
+}
+
+.role-label {
+  display: block;
+  color: #20372a;
+  font-size: 13px;
+  font-weight: 700;
+  line-height: 1.45;
+  overflow-wrap: anywhere;
+}
+
+.role-description {
+  display: block;
+  color: #7b887e;
+  font-size: 11px;
+  line-height: 1.6;
+  overflow-wrap: anywhere;
+}
+
+.role-check {
+  position: absolute;
+  top: 13px;
+  right: 13px;
+  display: grid;
+  place-items: center;
+  width: 20px;
+  height: 20px;
+  color: #ffffff;
+  background: #27834e;
+  border-radius: 50%;
+}
+
+/* =========================================
+   BUSINESS APPROVAL NOTICE
+========================================= */
+
+.role-notice {
+  margin: 0 0 22px;
+  padding: 15px 16px;
+  color: #76541b;
+  background: #fff9ec;
+  border: 1px solid #f1dfb7;
+  border-radius: 11px;
+}
+
+.role-notice strong {
+  display: block;
+  margin-bottom: 6px;
+  font-size: 13px;
+}
+
+.role-notice p {
+  margin: 0;
+  font-size: 12px;
+  line-height: 1.7;
+}
+
+/* =========================================
+   SUBMIT BUTTON
+========================================= */
+
+.auth-submit-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  width: 100%;
+  min-height: 51px;
+  margin-top: 26px;
+  padding: 13px 18px;
+
+  color: #ffffff;
+  background: #20784a;
+  border: none;
+  border-radius: 10px;
+
+  font-size: 14px;
+  font-weight: 700;
+
+  cursor: pointer;
+  transition: background 0.2s, transform 0.2s;
+}
+
+.auth-submit-button:hover:not(:disabled) {
+  background: #17633b;
+  transform: translateY(-1px);
+}
+
+.auth-submit-button:disabled {
+  cursor: not-allowed;
+  opacity: 0.7;
+}
+
+/* =========================================
+   ALERTS AND FOOTER
+========================================= */
+
+.auth-error,
+.auth-success {
+  padding: 12px 14px;
+  border-radius: 9px;
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+.auth-error {
+  color: #a42b2b;
+  background: #fff0f0;
+  border: 1px solid #ffd2d2;
+}
+
+.auth-success {
+  color: #17633b;
+  background: #edf9ef;
+  border: 1px solid #bfe8c7;
+}
+
+.auth-switch {
+  margin-top: 25px;
+  color: #7b867e;
+  text-align: center;
+  font-size: 13px;
+  line-height: 1.7;
+}
+
+.auth-switch a {
+  color: #20784a;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.auth-switch a:hover {
+  text-decoration: underline;
+}
+
+.auth-security-note {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+  margin-top: 30px;
+  color: #849188;
+  font-size: 12px;
+  line-height: 1.6;
+  text-align: center;
+}
+
+.auth-security-note svg {
+  flex-shrink: 0;
+  color: #3d9a61;
+}
+
+/* =========================================
+   TABLET
+========================================= */
+
+@media (max-width: 1000px) {
+  .auth-page {
+    grid-template-columns: 0.8fr 1.2fr;
+  }
+
+  .auth-brand-panel {
+    padding: 32px 7%;
+  }
+
+  .auth-form-panel {
+    padding: 35px 5%;
+  }
+
+  .signup-container {
+    max-width: 520px;
+  }
+
+  .role-option {
+    padding: 14px;
+  }
+
+  .role-option.selected {
+    padding: 13px;
+  }
+}
+
+/* =========================================
+   MOBILE
+========================================= */
+
+@media (max-width: 760px) {
+  .auth-page {
+    display: block;
+    min-height: 100vh;
+  }
+
+  .auth-brand-panel {
+    display: none;
+  }
+
+  .auth-form-panel {
+    display: block;
+    min-height: 100vh;
+    padding: 25px 22px 35px;
+  }
+
+  .auth-form-container {
+    max-width: 520px;
+    margin: 0 auto;
+  }
+
+  .mobile-brand-logo {
+    display: flex;
+    margin-bottom: 36px;
+    font-size: 25px;
+  }
+
+  .auth-heading {
+    margin-bottom: 26px;
+  }
+
+  .auth-heading h2 {
+    font-size: 29px;
+  }
+
+  .role-grid {
+    gap: 11px;
+  }
+
+  .role-option {
+    min-height: 135px;
+    padding: 14px;
+  }
+
+  .role-option.selected {
+    padding: 13px;
+  }
+}
+
+/* =========================================
+   SMALL MOBILE
+========================================= */
+
+@media (max-width: 380px) {
+  .auth-form-panel {
+    padding-right: 16px;
+    padding-left: 16px;
+  }
+
+  .role-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .role-option {
+    min-height: auto;
+    display: grid;
+    grid-template-columns: 42px minmax(0, 1fr);
+    align-items: center;
+    column-gap: 12px;
+    row-gap: 4px;
+  }
+
+  .role-icon {
+    grid-row: span 2;
+  }
+
+  .role-label,
+  .role-description {
+    grid-column: 2;
+  }
+}

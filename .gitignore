@@ -1,6 +1,7 @@
-# Environment files
+# Secrets
 .env
 .env.*
+!.env.example
 
 # Node.js
 node_modules/
@@ -9,17 +10,14 @@ node_modules/
 .dart_tool/
 .flutter-plugins
 .flutter-plugins-dependencies
-.packages
 build/
 
-# IDE
-.vscode/
-.idea/
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
 
-# Android
-android/.gradle/
-android/local.properties
-
-# OS
-.DS_Store
-Thumbs.db
+# AI datasets and generated models
+ai_verification/dataset/
+ai_verification/.venv/

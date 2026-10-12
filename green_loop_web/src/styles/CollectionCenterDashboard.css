@@ -1,0 +1,148 @@
+/* Collection centre API messages and controls */
+
+.cc-toolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 18px;
+  color: #64748b;
+  font-size: 13px;
+}
+
+.cc-refresh-button,
+.cc-collect-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  padding: 9px 12px;
+  border: 1px solid #bbf7d0;
+  border-radius: 8px;
+  background: #f0fdf4;
+  color: #166534;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.cc-refresh-button:disabled,
+.cc-collect-button:disabled {
+  opacity: 0.6;
+  cursor: wait;
+}
+
+.cc-message {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  margin-bottom: 15px;
+  padding: 13px 15px;
+  border-radius: 9px;
+  overflow-wrap: anywhere;
+}
+
+.cc-message.error {
+  color: #991b1b;
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+}
+
+.cc-message.success {
+  color: #166534;
+  background: #f0fdf4;
+  border: 1px solid #bbf7d0;
+}
+
+/* Collection tables */
+
+.cc-table-wrapper {
+  width: 100%;
+  overflow-x: auto;
+  margin-top: 18px;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+}
+
+.cc-data-table {
+  width: 100%;
+  min-width: 950px;
+  border-collapse: collapse;
+  text-align: left;
+}
+
+.cc-data-table th,
+.cc-data-table td {
+  padding: 13px;
+  border-bottom: 1px solid #e2e8f0;
+  font-size: 13px;
+  vertical-align: middle;
+}
+
+.cc-data-table th {
+  background: #f8fafc;
+  color: #475569;
+  white-space: nowrap;
+}
+
+.cc-data-table td {
+  color: #334155;
+}
+
+.cc-data-table td strong,
+.cc-data-table td small {
+  display: block;
+}
+
+.cc-data-table td small {
+  margin-top: 4px;
+  color: #64748b;
+  font-size: 11px;
+}
+
+.cc-data-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.cc-table-empty {
+  padding: 28px !important;
+  text-align: center;
+  color: #64748b !important;
+}
+
+.cc-status-badge {
+  display: inline-block;
+  padding: 5px 9px;
+  border-radius: 20px;
+  background: #fef3c7;
+  color: #92400e;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.cc-status-badge.collected {
+  background: #dbeafe;
+  color: #1d4ed8;
+}
+
+.cc-status-badge.recycled {
+  background: #dcfce7;
+  color: #166534;
+}
+
+.cc-status-badge.rejected {
+  background: #fee2e2;
+  color: #991b1b;
+}
+
+/* Responsive table controls */
+
+@media (max-width: 600px) {
+  .cc-toolbar {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .cc-refresh-button {
+    width: 100%;
+  }
+}

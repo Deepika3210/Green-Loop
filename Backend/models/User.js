@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 
 /* =========================================================
-   REWARD HISTORY SCHEMA
+   REWARD HISTORY
 ========================================================= */
 
 const rewardHistorySchema = new mongoose.Schema({
@@ -53,13 +53,28 @@ const userSchema = new mongoose.Schema(
 
     role: {
       type: String,
-      enum: ['user', 'manufacturer'],
+      enum: [
+        'user',
+        'manufacturer',
+        'collection_center',
+        'recycler',
+      ],
       default: 'user',
+      required: true,
+    },
+
+    // Business accounts require administrator approval.
+    accountStatus: {
+      type: String,
+      enum: ['active', 'pending', 'rejected'],
+      default: 'active',
+      required: true,
     },
 
     points: {
       type: Number,
       default: 0,
+      min: 0,
     },
 
     rewardHistory: {

@@ -1,5 +1,7 @@
 import { useCallback, useEffect, useState } from "react";
 
+import { useNavigate } from "react-router-dom";
+import "../styles/CollectionCenterDashboard.css";
 import {
   Leaf,
   LayoutDashboard,
@@ -19,8 +21,6 @@ import {
   Weight,
 } from "lucide-react";
 
-import { useNavigate } from "react-router-dom";
-import "../styles/CollectionCenterDashboard.css";
 
 const API_BASE = "http://localhost:5000";
 
